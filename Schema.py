@@ -6,15 +6,18 @@ Created on Fri Sep 26 22:09:52 2025
 @author: angelinachen
 """
 import snowflake.connector
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 conn = snowflake.connector.connect(
-    user="ACHEN374",
-    password="SnowflakeTrial1",
-    account="lphqjyd-tu39148",
-    warehouse="COMPUTE_WH",
-    database="SNOWFLAKE_LEARNING_DB",
-    schema="PUBLIC"
+    user=os.getenv("SNOWFLAKE_USER"),
+    password=os.getenv("SNOWFLAKE_PASSWORD"),
+    account=os.getenv("SNOWFLAKE_ACCOUNT"),
+    warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
+    database=os.getenv("SNOWFLAKE_DATABASE"),
+    schema=os.getenv("SNOWFLAKE_SCHEMA")
 )
 cur = conn.cursor()
 
