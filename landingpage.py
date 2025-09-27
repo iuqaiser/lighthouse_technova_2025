@@ -10,7 +10,19 @@ import streamlit as st
 # -------------------------------
 # Sidebar Navigation
 # -------------------------------
-st.sidebar.title("Navigation")
+st.markdown(
+    """
+    <style>
+    [data-testid="stSidebar"] {
+        background-color: #dbcaab !important;
+        border-right: 3px solid #8b7355; /* darker accent for contrast */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.sidebar.title("🧭 Navigation")
 
 menu_items = [("Home", "home"), ("About Us", "about")]
 
@@ -38,30 +50,25 @@ page = menu_items[selected_index][1]
 # Home Page
 # -------------------------------
 
-st.markdown(
-    """
-    <style>
-    /* Change the top toolbar (white bar) background */
-    header[data-testid="stHeader"] {
-        background-color: #b5c1f7 
-    }
-
-    /* Optional: remove drop shadow so it's cleaner */
-    header[data-testid="stHeader"]::before {
-        box-shadow: none;
-    }
-
-    /* Change the whole app background */
-    .stApp {
-        background-color: #b5c1f7
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 
 if page == "home":
+    # Background just for Home page
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: #c2d3ed;  /* Light lavender */
+        }
+        header[data-testid="stHeader"] {
+            background-color: #c2d3ed;  /* Lavender top bar */
+        }
+        header[data-testid="stHeader"]::before {
+            box-shadow: none;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     col1, col2, col3 = st.columns([2,1,2])
     with col2:
         st.title("⚓️💡🌊🚢") 
@@ -70,7 +77,7 @@ if page == "home":
         st.title("Lighthouse")
     col1, col2, col3 = st.columns([6,7,6])
     with col2:
-        st.write("Where help is only one click away.")
+        st.write("Where hope is only one click away.")
 
     # CSS specifically for homepage button
     st.markdown(
