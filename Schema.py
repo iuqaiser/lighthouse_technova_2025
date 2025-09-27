@@ -6,7 +6,7 @@ Created on Fri Sep 26 22:09:52 2025
 @author: angelinachen
 """
 import snowflake.connector
-import json
+
 
 conn = snowflake.connector.connect(
     user="ACHEN374",
