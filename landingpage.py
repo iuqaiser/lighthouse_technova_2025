@@ -180,25 +180,28 @@ elif page == "about":
             💭 How are you feeling today?
         </div>
     """, unsafe_allow_html=True)
-
     # Search bar in rounded box
     search_query = st.text_input("🖊️ Tell me!", "")
     if search_query:
         st.write(f"You searched for: **{search_query}**")
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
+    #BUTTON 
     # Small top-left button in a rounded box
     if st.button("Go back to Homepage"):
         st.query_params = {"page": ["home"]}
+ 
+    
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Columns for content and map
-    col1, col2 = st.columns([2,4])
+  
 
-    with col1:
-        st.markdown("""
+
+    # Columns for content and map
+    #col1, col2 = st.columns([2,4])
+
+   # with col1:
+    st.markdown("""
             <div style="
                 background-color:#f5eada;
             border-radius:15px;
@@ -209,17 +212,16 @@ elif page == "about":
             box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
             margin-bottom:10px;
             ">
-            The Database 
+            Best Matches
         </div>
     """, unsafe_allow_html=True)
 
 
-        st.write("We aim to build beautiful Streamlit apps that are easy to navigate.")
+    st.write("We aim to build beautiful Streamlit apps that are easy to navigate.")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    with col2:
-        st.markdown("""
+    st.markdown("""
             <div style="
                 background-color:#f5eada;
             border-radius:15px;
@@ -234,13 +236,13 @@ elif page == "about":
             </div> 
         """, unsafe_allow_html=True)
 
-        provider_search = st.text_input("🗺️ Input your city or postal code", "")
+    provider_search = st.text_input("🗺️ Input your city or postal code", "")
         
         # Map without pandas
-        uw_map_data = [{"lat": 43.4723, "lon": -80.5449}]
-        st.map(uw_map_data)
+    uw_map_data = [{"lat": 43.4723, "lon": -80.5449}]
+    st.map(uw_map_data)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Footer in rounded box
     col1, col2, col3 = st.columns([2,1,2])
