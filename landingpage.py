@@ -10,21 +10,56 @@ import streamlit as st
 # -------------------------------
 # Sidebar Navigation
 # -------------------------------
+
+st.set_page_config(layout="wide") 
+
+
 st.markdown(
     """
     <style>
+    /* Sidebar width */
     [data-testid="stSidebar"] {
         background-color: #dbcaab !important;
-        border-right: 3px solid #8b7355; /* darker accent for contrast */
+        border-right: 3px solid #912a04;
+    }
+
+    /* Selected radio button item */
+    div[role="radiogroup"] label[data-baseweb="radio"] > div[data-testid="stMarkdownContainer"] {
+        transition: background-color 0.2s;
+        border-radius: 8px;
+        padding: 5px 10px;
+    }
+
+    /* Active page (checked input) */
+    div[role="radiogroup"] label[data-baseweb="radio"] > input:checked + div[data-testid="stMarkdownContainer"] {
+        background-color: #912a04 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    /* Hover effect for unselected items */
+    div[role="radiogroup"] label[data-baseweb="radio"]:not(:has(input:checked)) > div[data-testid="stMarkdownContainer"]:hover {
+        background-color: #c78b72;
+        color: white;
+    }
+
+    /* Center main page content regardless of sidebar */
+    .appview-container .main .block-container {
+        max-width: 900px;   /* adjust width as needed */
+        padding-left: 3rem; /* space from sidebar */
+        padding-right: 3rem;
+        margin-left: auto;
+        margin-right: auto;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+
 st.sidebar.title("🧭 Navigation")
 
-menu_items = [("Home", "home"), ("About Us", "about")]
+menu_items = [("Homepage", "home"), ("Finder", "about")]
 
 # Get current page from query params
 current_page = st.query_params.get("page", ["home"])[0]
@@ -69,8 +104,9 @@ if page == "home":
         """,
         unsafe_allow_html=True
     )
-    col1, col2, col3 = st.columns([4,4,4]) 
-    with col2: 
+
+    col1, col2, col3 = st.columns([2,1,2])
+    with col2:
         st.title("⚓️💡🌊🚢")
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
@@ -103,7 +139,7 @@ if page == "home":
     unsafe_allow_html=True
 )
 
-    col1, col2, col3 = st.columns([6,7,6])
+    col1, col2, col3 = st.columns([2,1,2])
     with col2:
         if st.button("Start your healing journey here"):
             st.query_params = {"page": ["about"]}
@@ -132,7 +168,7 @@ elif page == "about":
     # Page title in rounded box
     st.markdown("""
         <div style="
-            background-color:#ffffff;
+            background-color:#f5eada;
             border-radius:20px;
             padding:20px;
             text-align:center;
@@ -146,16 +182,6 @@ elif page == "about":
     """, unsafe_allow_html=True)
 
     # Search bar in rounded box
-    st.markdown("""
-        <div style="
-            background-color:#ffffff;
-            border-radius:15px;
-            padding:15px;
-            box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
-            margin-bottom:20px;
-        ">
-    """, unsafe_allow_html=True)
-
     search_query = st.text_input("🖊️ Tell me!", "")
     if search_query:
         st.write(f"You searched for: **{search_query}**")
@@ -163,36 +189,31 @@ elif page == "about":
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Small top-left button in a rounded box
-    st.markdown("""
-        <div style="
-            display:inline-block;
-            background-color:#fae6c0;
-            border-radius:12px;
-            padding:10px 20px;
-            margin-bottom:20px;
-            box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-        ">
-    """, unsafe_allow_html=True)
-
     if st.button("Go back to Homepage"):
         st.query_params = {"page": ["home"]}
 
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Columns for content and map
-    col1, col2 = st.columns([2,3])
+    col1, col2 = st.columns([2,4])
 
     with col1:
         st.markdown("""
             <div style="
-                background-color:#ffffff;
-                border-radius:15px;
-                padding:15px;
-                box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+                background-color:#f5eada;
+            border-radius:15px;
+            padding:15px;
+            text-align:center;
+            font-size:28px;
+            font-weight:semibold;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            margin-bottom:10px;
             ">
-        """, unsafe_allow_html=True)
+            The Database 
+        </div>
+    """, unsafe_allow_html=True)
 
-        st.subheader("The Database")
+
         st.write("We aim to build beautiful Streamlit apps that are easy to navigate.")
 
         st.markdown("</div>", unsafe_allow_html=True)
@@ -200,14 +221,19 @@ elif page == "about":
     with col2:
         st.markdown("""
             <div style="
-                background-color:#ffffff;
-                border-radius:15px;
-                padding:15px;
-                box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+                background-color:#f5eada;
+            border-radius:15px;
+            padding:15px;
+            text-align:center;
+            font-size:28px;
+            font-weight:semibold;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            margin-bottom:10px;
             ">
+            🔎 Find a provider near you:
+            </div> 
         """, unsafe_allow_html=True)
 
-        st.subheader("🔎 Find a provider near you:")
         provider_search = st.text_input("🗺️ Input your city or postal code", "")
         
         # Map without pandas
@@ -217,19 +243,96 @@ elif page == "about":
         st.markdown("</div>", unsafe_allow_html=True)
 
     # Footer in rounded box
-    st.markdown("""
-        <div style="
-            background-color:#ffffff;
-            border-radius:15px;
-            padding:15px;
-            text-align:center;
-            font-size:16px;
-            box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
-            margin-top:20px;
-        ">
-            Team - Angie and Iman
-        </div>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([2,1,2])
+    with col2: 
+        st.write("Team - Angie and Iman")
+
+# -------------------------------
+# Sidebar Filters (only for About Us page)
+# -------------------------------
+if page == "about":
+    st.sidebar.markdown("---")  # Separator line
+    st.sidebar.subheader("Filter Providers 🩺")
+
+    # 1️⃣ Specialization in specific mental health conditions
+    mh_conditions = st.sidebar.multiselect(
+        "Specialization in mental health conditions",
+        options=[
+            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders"
+        ]
+    )
+
+    # 2️⃣ Type of therapy
+    therapy_type = st.sidebar.multiselect(
+        "Type of therapy",
+        options=[
+            "CBT", "DBT", "Group therapy (including AA)", "One-on-one"
+        ]
+    )
+
+    # 3️⃣ Specialization in traumas / life situations
+    trauma_support = st.sidebar.multiselect(
+        "Specialization in trauma / life situations",
+        options=[
+            "LGBTQ+ support", "Religious support", "Domestic/sexual violence trauma",
+            "Addiction support", "Grief counseling", "Career / life coaching"
+        ]
+    )
+
+    # 4️⃣ Provider gender
+    provider_gender = st.sidebar.radio(
+        "Healthcare provider gender",
+        options=["Any", "Male", "Female", "Non-binary", "Other"]
+    )
+
+    # 5️⃣ Insurance and hourly rate
+    insurance_options = st.sidebar.multiselect(
+        "Insurance accepted",
+        options=["OHIP", "Private", "Employee benefits", "Other"]
+    )
+    hourly_rate = st.sidebar.slider(
+        "Hourly rate ($)", 0, 500, (0, 200)
+    )
+    
+    search_clicked = st.sidebar.button("🔍 Search Providers")
+
+    # -------------------------------
+    # Display selected filters in styled boxes
+    # -------------------------------
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### Selected Filters")
+
+  
+    def render_filter_box(label, value):
+        """Render a filter selection in a rounded box"""
+        if value:
+            st.sidebar.markdown(f"""
+                <div style="
+                    background-color:#ffffff;
+                    border-radius:12px;
+                    padding:10px;
+                    margin-bottom:8px;
+                    box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+                    font-size:14px;
+                ">
+                    <strong>{label}:</strong> {value}
+                </div>
+            """, unsafe_allow_html=True) 
+            
+    render_filter_box("Mental Health Conditions", ", ".join(mh_conditions))
+    render_filter_box("Therapy Type", ", ".join(therapy_type))
+    render_filter_box("Traumas / Life Situations", ", ".join(trauma_support))
+    render_filter_box("Provider Gender", provider_gender)
+    render_filter_box("Insurance", ", ".join(insurance_options))
+    render_filter_box("Hourly Rate", f"${hourly_rate[0]} - ${hourly_rate[1]}")
+
+    # -------------------------------
+    # Apply filters (example)
+    # -------------------------------
+    if search_clicked:
+        st.success("Filters applied! Showing matching providers...")
+        # Here you can integrate your provider search logic
+        # e.g., update map points or a table based on selected filters
 
     # with col2: FOR GOOGLE MAPS
     #     st.subheader("Our Location")
