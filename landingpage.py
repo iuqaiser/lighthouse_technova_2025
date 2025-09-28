@@ -226,14 +226,11 @@ elif page == "about":
     table_placeholder = st.empty()
 
 # Example: no results yet
-    if "filtered_providers" in st.session_state:
-        table_placeholder.dataframe(
-            pd.DataFrame(st.session_state["filtered_providers"]), 
-            use_container_width=True
-        )
+    if st.session_state.get("filtered_providers"):
+        st.dataframe(pd.DataFrame(st.session_state["filtered_providers"]), use_container_width=True)
     else:
         st.markdown("""
-                    <div style="
+        <div style="
             background-color:#fff8ef;
             border: 2px dashed #c78b72;
             border-radius:12px;
@@ -245,8 +242,8 @@ elif page == "about":
         ">
         ℹ️ Use the search bar or filters to see results.
         </div>
-        <div style='margin-top:30px;'></div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
 
 # --- Search header box ---
     st.markdown("""
@@ -311,25 +308,50 @@ elif page == "about":
         providers = []
 
     # Geocode addresses
-    geolocator = Nominatim(user_agent="lighthouse_app")
-    map_points = []
+   # --- Map for filtered providers ---
+    import streamlit as st
+    from geopy.geocoders import Nominatim
 
-    for provider in providers:
-        address = provider.get("address")
-        if address:
-            try:
-                location = geolocator.geocode(address)
-                if location:
-                    map_points.append({"lat": location.latitude, "lon": location.longitude})
-            except Exception as e:
-                st.warning(f"Could not geocode address '{address}': {e}")
+    def get_map_points(providers):
+        """Geocode provider addresses and return map points."""
+        geolocator = Nominatim(user_agent="lighthouse_app")
+        points = []
 
-    # If no valid points, fallback
-    if not map_points:
-        map_points = [{"lat": 43.4723, "lon": -80.5449}]
+        for provider in providers:
+            address = provider.get("ADDRESS")
+            if address:
+                try:
+                    location = geolocator.geocode(address, timeout=10)
+                    if location:
+                        points.append({"lat": location.latitude, "lon": location.longitude})
+                except Exception as e:
+                    st.warning(f"Could not geocode address '{address}': {e}")
+        return points
 
-    # Show map
-    st.map(map_points)
+    if st.session_state.get("filtered_providers"):
+        map_points = get_map_points(st.session_state["filtered_providers"])
+
+        # Fallback if no valid points
+        if not map_points:
+            map_points = [{"lat": 43.4723, "lon": -80.5449}]  # default fallback location
+
+        st.map(map_points)
+    else:
+        st.markdown("""
+        <div style="
+            background-color:#fff8ef;
+            border: 2px dashed #c78b72;
+            border-radius:12px;
+            padding:20px;
+            text-align:center;
+            color:#555;
+            font-size:18px;
+            margin-top:15px;
+        ">
+        ℹ️ Search for providers or apply filters to see them on the map.
+        </div>
+        """, unsafe_allow_html=True)
+
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -366,197 +388,58 @@ for col_key, col_label in allowed_columns.items():
         column_values[col_key] = []
 
 if page == "about":
-    st.sidebar.markdown("---")  # Separator line
+    st.sidebar.markdown("---")
     st.sidebar.subheader("Filter Providers 🩺")
 
-    occupation = st.sidebar.multiselect(
-    allowed_columns["provider_role"],
-    options=column_values["provider_role"]
-    )
-
-    gender = st.sidebar.multiselect(
-        allowed_columns["gender_identity"],
-        options=column_values["gender_identity"]
-    )
-
-    insurance = st.sidebar.multiselect(
-        allowed_columns["insurance"],
-        options=column_values["insurance"]
-    )
-
-    session_options = st.sidebar.multiselect(
-        allowed_columns["session_options"],
-        options=column_values["session_options"]
-    )
-
-    specialized_support = st.sidebar.multiselect(
-        allowed_columns["specialized_support"],
-        options=column_values["specialized_support"]
-    )
-
-    services_offered = st.sidebar.multiselect(
-        allowed_columns["services_offered"],
-        options=column_values["services_offered"]
-    )
-    
-    # specialty = st.sidebar.text_input("Specialty")
-    # insurance = st.sidebar.text_input("Insurance")
-    # gender = st.sidebar.text_input("Gender Identity")
-    # services = st.sidebar.text_input("Services Offered")
-    # session = st.sidebar.text_input("Session Offering Options")
-    #rate = st.sidebar.slider("Hourly Rate", 0, 500, 10)
-    city_input = st.sidebar.text_input("City")  # Allow free-text input
+    occupation = st.sidebar.multiselect(allowed_columns["provider_role"], options=column_values["provider_role"])
+    gender = st.sidebar.multiselect(allowed_columns["gender_identity"], options=column_values["gender_identity"])
+    insurance = st.sidebar.multiselect(allowed_columns["insurance"], options=column_values["insurance"])
+    session_options = st.sidebar.multiselect(allowed_columns["session_options"], options=column_values["session_options"])
+    specialized_support = st.sidebar.multiselect(allowed_columns["specialized_support"], options=column_values["specialized_support"])
+    services_offered = st.sidebar.multiselect(allowed_columns["services_offered"], options=column_values["services_offered"])
+    city_input = st.sidebar.text_input("City")
+    rate = st.sidebar.slider("Hourly rate ($)", 0, 500, (0, 200))
     limit = st.sidebar.slider("Max providers to fetch", 1, 100, 50)
-    # 1️⃣ Specialization in specific mental health conditions
-    # mh_conditions = st.sidebar.multiselect(
-    #     "Common specialization in mental health conditions",
-    #     options=[
-    #         "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders", "OCD", "Other"
-    #     ]
-    # )
 
-    # # 2️⃣ Type of therapy
-    # therapy_type = st.sidebar.multiselect(
-    #     "Type of therapy",
-    #     options=[
-    #         "CBT", "DBT", "Group therapy (including AA)", "One-on-one", "Other"
-    #     ]
-    # )
-
-    # # 3️⃣ Specialization in traumas / life situations
-    # trauma_support = st.sidebar.multiselect(
-    #     "Common specialization in trauma / life situations",
-    #     options=[
-    #         "LGBTQ+ support", "Religious support", "Domestic/sexual violence trauma",
-    #         "Addiction support", "Grief counseling", "Career / life coaching", "Other"
-    #     ]
-    # )
-
-    # # 4️⃣ Provider gender
-    # provider_gender = st.sidebar.radio(
-    #     "Healthcare provider gender",
-    #     options=["Any", "Male", "Female", "Non-binary", "Other"]
-    # )
-
-    # # 5️⃣ Insurance and hourly rate
-    # insurance_options = st.sidebar.multiselect(
-    #     "Common insurance accepted",
-    #     options=["OHIP", "Greenshield", "Manulife", "Blue Cross", "Canada Life", "Sun Life", "Desjardins", "Other"]
-    # )
-    rate = st.sidebar.slider(
-        "Hourly rate ($)", 0, 500, (0, 200)
-    )
-    
     search_clicked = st.sidebar.button("🔍 Search Providers")
 
-    # -------------------------------
-    # Display selected filters in styled boxes
-    # -------------------------------
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### Selected Filters")
-
-  
-    def render_filter_box(label, value):
-        """Render a filter selection in a rounded box"""
-        if value:
-            st.sidebar.markdown(f"""
-                <div style="
-                    background-color:#ffffff;
-                    border-radius:12px;
-                    padding:10px;
-                    margin-bottom:8px;
-                    box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
-                    font-size:14px;
-                    color:#32a852;
-                ">
-                    <strong>{label}:</strong> {value}
-                </div>
-            """, unsafe_allow_html=True) 
-            
-    render_filter_box("Occupation", ", ".join(occupation or []))
-    render_filter_box("Therapy Type", ", ".join(services_offered or []))
-    render_filter_box("Traumas / Life Situations", ", ".join(specialized_support or []))
-    render_filter_box("Provider Gender", gender)
-    render_filter_box("Insurance", ", ".join(insurance or []))
-    render_filter_box("Hourly Rate", f"${rate[0]} - ${rate[1]}")
-
-    params = {
-        "provider_role": occupation if occupation else None,
-        "services_offered": services_offered if services_offered else None,
-        "specialized_support": specialized_support if specialized_support else None,
-        "gender_identity": gender if gender else None,
-        "insurance": insurance if insurance else None,
-        "hourly_rate_min": rate[0] if rate else None,
-        "hourly_rate_max": rate[1] if rate else None,
-    }
-
-    # Remove None values
-    params = {k: v for k, v in params.items() if v is not None}
-
-    # --- Fetch providers ---
-    providers = []
     if search_clicked:
         st.session_state["filtered_providers"] = []
         st.success("Filters applied! Fetching matching providers...")
+
+        # Map frontend filter keys to backend query params
+        backend_params = {
+            "occupation": occupation or None,
+            "gender": gender or None,
+            "insurance": insurance or None,
+            "session": session_options or None,
+            "specialty": specialized_support or None,
+            "services": services_offered or None,
+            "city": city_input or None,
+            "rate_min": rate[0],
+            "rate_max": rate[1],
+            "limit": limit
+        }
+
+        # Remove None or empty lists
+        backend_params = {k: v for k, v in backend_params.items() if v}
+
+        # Prepare query params for GET request
+        params_query = []
+        for k, v in backend_params.items():
+            if isinstance(v, list):
+                for val in v:
+                    params_query.append((k, val))
+            else:
+                params_query.append((k, v))
+
+        # Fetch providers
         try:
-            # Fetch providers from backend
-            params_query = {k: ','.join(v) if isinstance(v, list) else v for k, v in params.items()}
             response = requests.get(f"{backend_url}/search/providers", params=params_query)
             response.raise_for_status()
-            providers = response.json()
+            st.session_state["filtered_providers"] = response.json()
         except Exception as e:
             st.error(f"Could not fetch providers: {e}")
-            providers = []
 
-        #Filter providers further based on search term
-        search_term_lower = search_query2.lower() if search_query2 else None
-        for p in providers:
-            if search_term_lower:
-                found = False
-                for key, value in p.items():
-                    if isinstance(value, list):
-                        if any(search_term_lower in str(v).lower() for v in value):
-                            found = True
-                            break
-                    elif value is not None:
-                        if search_term_lower in str(value).lower():
-                            found = True
-                            break
-                if not found:
-                    continue
-            st.session_state["filtered_providers"].append(p)
-
-    # Display results
-    # table_placeholder = st.empty()
-    # if st.session_state["filtered_providers"]:
-    #     table_placeholder.dataframe(
-    #         pd.DataFrame(st.session_state["filtered_providers"]),
-    #         use_container_width=True
-    #     )
-    # else:
-    #     table_placeholder.markdown("ℹ️ Use the search bar or filters to see results.")
-
-            # Here you can integrate your provider search logic
-            # e.g., update map points or a table based on selected filters
-
-        # with col2: FOR GOOGLE MAPS
-        #     st.subheader("Our Location")
-        #     # Embed Google Map iframe
-        #     st.markdown(
-        #         """
-        #         <iframe 
-        #             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.6719059078693!2d-79.3856906845003!3d43.65322697912162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34d1f2fa3b91%3A0x2e60b13b1df6a055!2sToronto%2C%20ON%2C%20Canada!5e0!3m2!1sen!2sus!4v1695800000000!5m2!1sen!2sus" 
-        #             width="100%" 
-        #             height="400" 
-        #             style="border:0;" 
-        #             allowfullscreen="" 
-        #             loading="lazy" 
-        #             referrerpolicy="no-referrer-when-downgrade">
-        #         </iframe>
-        #         """,
-        #         unsafe_allow_html=True
-        #     )
-
-
-        # Example unique content
-
+    # Display filtered providers table
+    
