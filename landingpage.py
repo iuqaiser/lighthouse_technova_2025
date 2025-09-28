@@ -262,8 +262,8 @@ elif page == "about":
 """, unsafe_allow_html=True)
 
 # --- Search bar + button ---
-    st.text_input("Search by location", key="search_query")
-    if st.button("Run Search"):
+    search_query2 = st.text_input("Search by location", key="search_query")
+    if search_query2: 
     # TODO: Replace with Snowflake query
         df = pd.DataFrame({
         "Provider": ["Alice", "Bob"],
@@ -272,28 +272,28 @@ elif page == "about":
     })
         st.session_state["results"] = df
 
-# --- Results section (scoped only to this area) ---
-    table_placeholder = st.empty()
-    with table_placeholder.container():
-        if "results" in st.session_state:
-            st.dataframe(st.session_state["results"], use_container_width=True)
-        else:
-            st.markdown("""
-                        <div style="
-                        background-color:#fff8ef;
-                border: 2px dashed #c78b72;
-                border-radius:12px;
-                padding:20px;
-                text-align:center;
-                color:#555;
-                font-size:18px;
-                margin-top:15px;
-            ">
-            ℹ️ Use the search bar or filters to see results.
+# # --- Results section (scoped only to this area) ---
+#     table_placeholder = st.empty()
+#     with table_placeholder.container():
+#         if "results" in st.session_state:
+#             st.dataframe(st.session_state["results"], use_container_width=True)
+#         else:
+#             st.markdown("""
+#                         <div style="
+#                         background-color:#fff8ef;
+#                 border: 2px dashed #c78b72;
+#                 border-radius:12px;
+#                 padding:20px;
+#                 text-align:center;
+#                 color:#555;
+#                 font-size:18px;
+#                 margin-top:15px;
+#             ">
+#             ℹ️ Use the search bar or filters to see results.
             
-            </div>
-            <div style='margin-top:30px;'></div>
-        """, unsafe_allow_html=True)
+#             </div>
+#             <div style='margin-top:30px;'></div>
+#         """, unsafe_allow_html=True)
         
         # Map without pandas
     uw_map_data = [{"lat": 43.4723, "lon": -80.5449}]
