@@ -181,14 +181,16 @@ elif page == "about":
         </div>
     """, unsafe_allow_html=True)
     # Search bar in rounded box
-    search_query = st.text_input("🖊️ Tell me!", "")
+    search_query = st.text_input("🖊️ Type into the search bar and I’ll help match you with a mental health provider, or use the navigation filters to explore options that fit your needs.", "")
     if search_query:
         st.write(f"You searched for: **{search_query}**")
 
     #BUTTON 
     # Small top-left button in a rounded box
-    if st.button("Go back to Homepage"):
+    st.markdown('<div class="home-btn">', unsafe_allow_html=True)
+    if st.button("Go back to Homepage", key="about_home_btn"):
         st.query_params = {"page": ["home"]}
+    st.markdown('</div>', unsafe_allow_html=True)
  
     
 
@@ -258,9 +260,9 @@ if page == "about":
 
     # 1️⃣ Specialization in specific mental health conditions
     mh_conditions = st.sidebar.multiselect(
-        "Specialization in mental health conditions",
+        "Common specialization in mental health conditions",
         options=[
-            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders"
+            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders", "OCD"
         ]
     )
 
@@ -274,7 +276,7 @@ if page == "about":
 
     # 3️⃣ Specialization in traumas / life situations
     trauma_support = st.sidebar.multiselect(
-        "Specialization in trauma / life situations",
+        "Common specialization in trauma / life situations",
         options=[
             "LGBTQ+ support", "Religious support", "Domestic/sexual violence trauma",
             "Addiction support", "Grief counseling", "Career / life coaching"
@@ -289,8 +291,8 @@ if page == "about":
 
     # 5️⃣ Insurance and hourly rate
     insurance_options = st.sidebar.multiselect(
-        "Insurance accepted",
-        options=["OHIP", "Private", "Employee benefits", "Other"]
+        "Common insurance accepted",
+        options=["OHIP", "Greenshield", "Manulife", "Blue Cross", "Canada Life", "Sun Life", "Desjardins", "Other"]
     )
     hourly_rate = st.sidebar.slider(
         "Hourly rate ($)", 0, 500, (0, 200)
