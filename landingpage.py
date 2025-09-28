@@ -221,12 +221,12 @@ elif page == "about":
 
 
     # Placeholder for the table
-table_placeholder = st.empty()
+    table_placeholder = st.empty()
 
 # Example: no results yet
-if "results" not in st.session_state:
-    st.markdown("""
-        <div style="
+    if "results" not in st.session_state:
+        st.markdown("""
+                    <div style="
             background-color:#fff8ef;
             border: 2px dashed #c78b72;
             border-radius:12px;
@@ -238,13 +238,14 @@ if "results" not in st.session_state:
         ">
         ℹ️ Use the search bar or filters to see results.
         </div>
+        <div style='margin-top:30px;'></div>
     """, unsafe_allow_html=True)
-else:
+    else:
     # Show query results
         table_placeholder.dataframe(st.session_state["results"], use_container_width=True)
 
 # --- Search header box ---
-st.markdown("""
+    st.markdown("""
     <div style="
         background-color:#f5eada;
         border-radius:15px;
@@ -257,28 +258,29 @@ st.markdown("""
     ">
     🔎 Find a provider near you:
     </div> 
+    
 """, unsafe_allow_html=True)
 
 # --- Search bar + button ---
-st.text_input("Search by location", key="search_query")
-if st.button("Run Search"):
+    st.text_input("Search by location", key="search_query")
+    if st.button("Run Search"):
     # TODO: Replace with Snowflake query
-    df = pd.DataFrame({
+        df = pd.DataFrame({
         "Provider": ["Alice", "Bob"],
         "Specialty": ["CBT", "DBT"],
         "Location": ["Toronto", "Vancouver"]
     })
-    st.session_state["results"] = df
+        st.session_state["results"] = df
 
 # --- Results section (scoped only to this area) ---
-table_placeholder = st.empty()
-with table_placeholder.container():
-    if "results" in st.session_state:
-        st.dataframe(st.session_state["results"], use_container_width=True)
-    else:
-        st.markdown("""
-            <div style="
-                background-color:#fff8ef;
+    table_placeholder = st.empty()
+    with table_placeholder.container():
+        if "results" in st.session_state:
+            st.dataframe(st.session_state["results"], use_container_width=True)
+        else:
+            st.markdown("""
+                        <div style="
+                        background-color:#fff8ef;
                 border: 2px dashed #c78b72;
                 border-radius:12px;
                 padding:20px;
@@ -288,7 +290,9 @@ with table_placeholder.container():
                 margin-top:15px;
             ">
             ℹ️ Use the search bar or filters to see results.
+            
             </div>
+            <div style='margin-top:30px;'></div>
         """, unsafe_allow_html=True)
         
         # Map without pandas
@@ -313,7 +317,7 @@ if page == "about":
     mh_conditions = st.sidebar.multiselect(
         "Common specialization in mental health conditions",
         options=[
-            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders", "OCD"
+            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders", "OCD", "Other"
         ]
     )
 
@@ -321,7 +325,7 @@ if page == "about":
     therapy_type = st.sidebar.multiselect(
         "Type of therapy",
         options=[
-            "CBT", "DBT", "Group therapy (including AA)", "One-on-one"
+            "CBT", "DBT", "Group therapy (including AA)", "One-on-one", "Other"
         ]
     )
 
@@ -330,7 +334,7 @@ if page == "about":
         "Common specialization in trauma / life situations",
         options=[
             "LGBTQ+ support", "Religious support", "Domestic/sexual violence trauma",
-            "Addiction support", "Grief counseling", "Career / life coaching"
+            "Addiction support", "Grief counseling", "Career / life coaching", "Other"
         ]
     )
 
