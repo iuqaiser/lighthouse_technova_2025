@@ -1,26 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Sep 27 09:13:29 2025
-
-@author: angelinachen
-"""
-from fastapi import FastAPI, Query
-from typing import List, Optional
-import snowflake.connector
-import os
+from fastapi import FastAPI
+from snowflake.connector import connect, DictCursor
 from dotenv import load_dotenv
-
-load_dotenv()
+import os
 
 app = FastAPI()
+load_dotenv()
 
-
-def get_conn():
-    """
-    Establishes a connection to Snowflake using environment variables.
-    """
-    return snowflake.connector.connect(
+# ---- Snowflake connection ----
+conn = connect(
         user=os.getenv("SNOWFLAKE_USER"),
         password=os.getenv("SNOWFLAKE_PASSWORD"),
         account=os.getenv("SNOWFLAKE_ACCOUNT"),
@@ -29,86 +16,45 @@ def get_conn():
         schema=os.getenv("SNOWFLAKE_SCHEMA")
     )
 
-
-@app.get("/")
-def root():
-    return {"message": "Backend is running!"}
-
-
+# ---- Flexible search endpoint ----
 @app.get("/search/providers")
 def search_providers(
-    q: Optional[str] = None,
-    specialties: Optional[List[str]] = Query(None),
-    insurances: Optional[List[str]] = Query(None),
-    lat: Optional[float] = None,
-    lon: Optional[float] = None,
-    radius_km: float = 50
+    occupation: str = None,
+    specialty: str = None,
+    insurance: str = None,
+    session: str = None,
+    city: str = None,
+    limit: int = 5
 ):
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
+    query = "SELECT * FROM providers WHERE 1=1"
+    params = []
 
-        # Base query (using lowercase column names)
-        sql = """
-        SELECT provider_id, full_name, location_city, location_state, session_cost
-        FROM providers
-        WHERE 1=1
-        """
-        params = {}
+    if occupation:
+        query += " AND PROVIDER_ROLE ILIKE %s"
+        params.append(f"%{occupation}%")
 
-        # Free-text search on full_name
-        if q:
-            sql += ' AND LOWER(full_name) LIKE '%' || :q || '%''
-            params["q"] = q.lower()
+    if specialty:
+        query += " AND SPECIALIZED_SUPPORT ILIKE %s"
+        params.append(f"%{specialty}%")
 
-        # Filter by specialties (therapy_types array)
-        if specialties:
-            conds = []
-            for i, sp in enumerate(specialties):
-                key = f"sp{i}"
-                conds.append(f"ARRAY_CONTAINS(therapy_types, :{key})")
-                params[key] = sp
-            sql += " AND (" + " OR ".join(conds) + ")"
+    if insurance:
+        query += " AND INSURANCE ILIKE %s"
+        params.append(f"%{insurance}%")
 
-        # Filter by insurance_accepted array
-        if insurances:
-            conds = []
-            for i, ins in enumerate(insurances):
-                key = f"in{i}"
-                conds.append(f"ARRAY_CONTAINS(insurance_accepted, :{key})")
-                params[key] = ins
-            sql += " AND (" + " OR ".join(conds) + ")"
+    if session:
+        query += " AND SESSION_OPTIONS ILIKE %s"
+        params.append(f"%{session}%")
 
-        # Optional geolocation filter
-        if lat and lon:
-            sql += """
-            AND ST_DISTANCE(
-                location_point,
-                TO_GEOGRAPHY('POINT(' || :lon || ' ' || :lat || ')')
-            ) <= :radius_m
-            """
-            params["lat"] = lat
-            params["lon"] = lon
-            params["radius_m"] = radius_km * 1000
+    if city:
+        query += " AND ADDRESS ILIKE %s"
+        params.append(f"%{city}%")
 
-        cur.execute(sql, params)
-        rows = cur.fetchall()
-        cur.close()
-        conn.close()
+    # ✅ Add LIMIT here
+    query += " LIMIT %s"
+    params.append(limit)
 
-        # Return results
-        results = [
-            {
-                "provider_id": r[0],
-                "full_name": r[1],
-                "city": r[2],
-                "state": r[3],
-                "session_cost": float(r[4])
-            } for r in rows
-        ]
+    with conn.cursor(DictCursor) as cur:
+        cur.execute(query, params)
+        results = cur.fetchall()
 
-        return {"results": results}
-
-    except Exception as e:
-        print("ERROR:", e)
-        return {"error": str(e)}
+    return results

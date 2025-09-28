@@ -7,15 +7,15 @@ Created on Sat Sep 27 10:42:19 2025
 """
 # ui.py
 import streamlit as st
-import Schema  # your Schema.py file
+import schema  # your schema.py file
 
-Schema.insert_sample_providers()
+schema.insert_sample_providers()
 
 st.set_page_config(page_title="Therapy Providers", layout="wide")
 st.title("Therapy Providers Directory")
 
-# --- Fetch providers from Snowflake via Schema.py ---
-providers = Schema.fetch_providers_from_db()
+# --- Fetch providers from Snowflake via schema.py ---
+providers = schema.fetch_providers_from_db()
 
 # --- Handle empty database ---
 if not providers:
@@ -90,5 +90,5 @@ for p in filtered_providers:
     st.markdown(f"**Phone:** {p['contact_phone']}")
 
 
-providers = Schema.fetch_providers_from_db()
+providers = schema.fetch_providers_from_db()
 print("Providers fetched:", providers)  
