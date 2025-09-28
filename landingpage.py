@@ -6,6 +6,7 @@ Created on Sat Sep 27 12:51:10 2025
 @author: angelinachen
 """
 import streamlit as st
+import pandas as pd 
 
 # -------------------------------
 # Sidebar Navigation
@@ -108,7 +109,7 @@ if page == "home":
     col1, col2, col3 = st.columns([2,1,2])
     with col2:
         st.title("⚓️💡🌊🚢")
-    col1, col2, col3 = st.columns([1,2,1])
+    col1, col2, col3 = st.columns([1.5,1,1.5])
     with col2:
         st.markdown("<h1 style='text-align: center;'>Lighthouse</h1>", unsafe_allow_html=True)
         st.write("<p style='text-align:center; font-size:20px; font-weight:400; color:#333;'>Where hope is only one click away.</p>", unsafe_allow_html=True)
@@ -181,14 +182,16 @@ elif page == "about":
         </div>
     """, unsafe_allow_html=True)
     # Search bar in rounded box
-    search_query = st.text_input("🖊️ Tell me!", "")
+    search_query = st.text_input("🖊️ Type into the search bar and I’ll help match you with a mental health provider, or use the navigation filters to explore options that fit your needs.", "")
     if search_query:
         st.write(f"You searched for: **{search_query}**")
 
     #BUTTON 
     # Small top-left button in a rounded box
-    if st.button("Go back to Homepage"):
+    st.markdown('<div class="home-btn">', unsafe_allow_html=True)
+    if st.button("Go back to Homepage", key="about_home_btn"):
         st.query_params = {"page": ["home"]}
+    st.markdown('</div>', unsafe_allow_html=True)
  
     
 
@@ -217,26 +220,80 @@ elif page == "about":
     """, unsafe_allow_html=True)
 
 
-    st.write("We aim to build beautiful Streamlit apps that are easy to navigate.")
+    # Placeholder for the table
+    table_placeholder = st.empty()
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("""
-            <div style="
-                background-color:#f5eada;
-            border-radius:15px;
-            padding:15px;
+# Example: no results yet
+    if "results" not in st.session_state:
+        st.markdown("""
+                    <div style="
+            background-color:#fff8ef;
+            border: 2px dashed #c78b72;
+            border-radius:12px;
+            padding:20px;
             text-align:center;
-            font-size:28px;
-            font-weight:semibold;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            margin-bottom:10px;
-            ">
-            🔎 Find a provider near you:
-            </div> 
-        """, unsafe_allow_html=True)
+            color:#555;
+            font-size:18px;
+            margin-top:15px;
+        ">
+        ℹ️ Use the search bar or filters to see results.
+        </div>
+        <div style='margin-top:30px;'></div>
+    """, unsafe_allow_html=True)
+    else:
+    # Show query results
+        table_placeholder.dataframe(st.session_state["results"], use_container_width=True)
 
-    provider_search = st.text_input("🗺️ Input your city or postal code", "")
+# --- Search header box ---
+    st.markdown("""
+    <div style="
+        background-color:#f5eada;
+        border-radius:15px;
+        padding:15px;
+        text-align:center;
+        font-size:28px;
+        font-weight:600;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        margin-bottom:20px;
+    ">
+    🔎 Find a provider near you:
+    </div> 
+    
+""", unsafe_allow_html=True)
+
+# --- Search bar + button ---
+    search_query2 = st.text_input("Search by location", key="search_query")
+    if search_query2: 
+    # TODO: Replace with Snowflake query
+        df = pd.DataFrame({
+        "Provider": ["Alice", "Bob"],
+        "Specialty": ["CBT", "DBT"],
+        "Location": ["Toronto", "Vancouver"]
+    })
+        st.session_state["results"] = df
+
+# # --- Results section (scoped only to this area) ---
+#     table_placeholder = st.empty()
+#     with table_placeholder.container():
+#         if "results" in st.session_state:
+#             st.dataframe(st.session_state["results"], use_container_width=True)
+#         else:
+#             st.markdown("""
+#                         <div style="
+#                         background-color:#fff8ef;
+#                 border: 2px dashed #c78b72;
+#                 border-radius:12px;
+#                 padding:20px;
+#                 text-align:center;
+#                 color:#555;
+#                 font-size:18px;
+#                 margin-top:15px;
+#             ">
+#             ℹ️ Use the search bar or filters to see results.
+            
+#             </div>
+#             <div style='margin-top:30px;'></div>
+#         """, unsafe_allow_html=True)
         
         # Map without pandas
     uw_map_data = [{"lat": 43.4723, "lon": -80.5449}]
@@ -258,9 +315,9 @@ if page == "about":
 
     # 1️⃣ Specialization in specific mental health conditions
     mh_conditions = st.sidebar.multiselect(
-        "Specialization in mental health conditions",
+        "Common specialization in mental health conditions",
         options=[
-            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders"
+            "Depression", "Anxiety", "PTSD", "Bipolar", "ADHD", "Eating Disorders", "OCD", "Other"
         ]
     )
 
@@ -268,16 +325,16 @@ if page == "about":
     therapy_type = st.sidebar.multiselect(
         "Type of therapy",
         options=[
-            "CBT", "DBT", "Group therapy (including AA)", "One-on-one"
+            "CBT", "DBT", "Group therapy (including AA)", "One-on-one", "Other"
         ]
     )
 
     # 3️⃣ Specialization in traumas / life situations
     trauma_support = st.sidebar.multiselect(
-        "Specialization in trauma / life situations",
+        "Common specialization in trauma / life situations",
         options=[
             "LGBTQ+ support", "Religious support", "Domestic/sexual violence trauma",
-            "Addiction support", "Grief counseling", "Career / life coaching"
+            "Addiction support", "Grief counseling", "Career / life coaching", "Other"
         ]
     )
 
@@ -289,8 +346,8 @@ if page == "about":
 
     # 5️⃣ Insurance and hourly rate
     insurance_options = st.sidebar.multiselect(
-        "Insurance accepted",
-        options=["OHIP", "Private", "Employee benefits", "Other"]
+        "Common insurance accepted",
+        options=["OHIP", "Greenshield", "Manulife", "Blue Cross", "Canada Life", "Sun Life", "Desjardins", "Other"]
     )
     hourly_rate = st.sidebar.slider(
         "Hourly rate ($)", 0, 500, (0, 200)
