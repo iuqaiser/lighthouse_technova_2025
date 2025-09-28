@@ -6,6 +6,7 @@ Created on Sat Sep 27 12:51:10 2025
 @author: angelinachen
 """
 import streamlit as st
+import pandas as pd 
 
 # -------------------------------
 # Sidebar Navigation
@@ -219,26 +220,76 @@ elif page == "about":
     """, unsafe_allow_html=True)
 
 
-    st.write("We aim to build beautiful Streamlit apps that are easy to navigate.")
+    # Placeholder for the table
+table_placeholder = st.empty()
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
+# Example: no results yet
+if "results" not in st.session_state:
     st.markdown("""
-            <div style="
-                background-color:#f5eada;
-            border-radius:15px;
-            padding:15px;
+        <div style="
+            background-color:#fff8ef;
+            border: 2px dashed #c78b72;
+            border-radius:12px;
+            padding:20px;
             text-align:center;
-            font-size:28px;
-            font-weight:semibold;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            margin-bottom:10px;
-            ">
-            🔎 Find a provider near you:
-            </div> 
-        """, unsafe_allow_html=True)
+            color:#555;
+            font-size:18px;
+            margin-top:15px;
+        ">
+        ℹ️ Use the search bar or filters to see results.
+        </div>
+    """, unsafe_allow_html=True)
+else:
+    # Show query results
+        table_placeholder.dataframe(st.session_state["results"], use_container_width=True)
 
-    provider_search = st.text_input("🗺️ Input your city or postal code", "")
+# --- Search header box ---
+st.markdown("""
+    <div style="
+        background-color:#f5eada;
+        border-radius:15px;
+        padding:15px;
+        text-align:center;
+        font-size:28px;
+        font-weight:600;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        margin-bottom:20px;
+    ">
+    🔎 Find a provider near you:
+    </div> 
+""", unsafe_allow_html=True)
+
+# --- Search bar + button ---
+st.text_input("Search by location", key="search_query")
+if st.button("Run Search"):
+    # TODO: Replace with Snowflake query
+    df = pd.DataFrame({
+        "Provider": ["Alice", "Bob"],
+        "Specialty": ["CBT", "DBT"],
+        "Location": ["Toronto", "Vancouver"]
+    })
+    st.session_state["results"] = df
+
+# --- Results section (scoped only to this area) ---
+table_placeholder = st.empty()
+with table_placeholder.container():
+    if "results" in st.session_state:
+        st.dataframe(st.session_state["results"], use_container_width=True)
+    else:
+        st.markdown("""
+            <div style="
+                background-color:#fff8ef;
+                border: 2px dashed #c78b72;
+                border-radius:12px;
+                padding:20px;
+                text-align:center;
+                color:#555;
+                font-size:18px;
+                margin-top:15px;
+            ">
+            ℹ️ Use the search bar or filters to see results.
+            </div>
+        """, unsafe_allow_html=True)
         
         # Map without pandas
     uw_map_data = [{"lat": 43.4723, "lon": -80.5449}]
