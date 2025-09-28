@@ -106,10 +106,10 @@ if page == "home":
         unsafe_allow_html=True
     )
 
-    col1, col2, col3 = st.columns([2.15,1,2])
+    col1, col2, col3 = st.columns([2,1,2])
     with col2:
         st.title("⚓️💡🌊🚢")
-    col1, col2, col3 = st.columns([2,1,2])
+    col1, col2, col3 = st.columns([1.5,1,1.5])
     with col2:
         st.markdown("<h1 style='text-align: center;'>Lighthouse</h1>", unsafe_allow_html=True)
         st.write("<p style='text-align:center; font-size:20px; font-weight:400; color:#333;'>Where hope is only one click away.</p>", unsafe_allow_html=True)
