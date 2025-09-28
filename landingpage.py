@@ -115,7 +115,7 @@ if page == "home":
 
     col1, col2, col3 = st.columns([2,1,2])
     with col2:
-        st.title("⚓️💡🌊🚢")
+        st.title("💡🌊🚢")
     col1, col2, col3 = st.columns([1.5,1,1.5])
     with col2:
         st.markdown("<h1 style='text-align: center;'>Lighthouse</h1>", unsafe_allow_html=True)
