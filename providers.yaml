@@ -1,0 +1,47 @@
+# providers_model.yaml
+version: 1
+description: "Semantic model for the providers table"
+
+tables:
+  providers:
+    description: "Information about healthcare providers"
+    columns:
+      ID:
+        description: "Unique identifier for each provider"
+        type: integer
+      PROVIDER_ROLE:
+        description: "Occupation or role of the provider"
+        type: string
+      FIRST_NAME:
+        description: "First name of the provider"
+        type: string
+      LAST_NAME:
+        description: "Surname of the provider"
+        type: string
+      GENDER_IDENTITY:
+        description: "Gender identity of the provider"
+        type: string
+      INSURANCE:
+        description: "Accepted insurance plans"
+        type: string
+      HOURLY_RATE:
+        description: "Hourly rate in CAD"
+        type: number
+      SESSION_OPTIONS:
+        description: "Available session types (virtual, in-person, or both)"
+        type: string
+      SPECIALIZED_SUPPORT:
+        description: "Specialty or support areas"
+        type: string
+      SERVICES_OFFERED:
+        description: "Services provided"
+        type: string
+      REGISTRATION_NUMBER:
+        description: "Professional registration number with respective certifying provincial body"
+        type: string
+      EMAIL:
+        description: "Provider's email address"
+        type: string
+      ADDRESS:
+        description: "Provider's address"
+        type: string

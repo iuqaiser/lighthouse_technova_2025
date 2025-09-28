@@ -52,39 +52,6 @@ df.columns = [c.upper() for c in df.columns]
 
 # Step 4: Insert rows into Snowflake
 write_pandas(conn, df, 'PROVIDERS')
-
-#First Name,Last Name,Gender Identity,Insurance Accepted,Hourly Rate,Session Offering Options,Specialized Support For,Services Offered,Registration Number,Email,City
-# for _, row in df.iterrows():
-#     cur.execute("""
-#         INSERT INTO providers (
-#             first_name,
-#             last_name,
-#             gender_identity,
-#             insurance,
-#             hourly_rate,
-#             session_options,
-#             specialized_support,
-#             services_offered,
-#             registration_number,
-#             email,
-#             city
-#         )
-#         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-#     """, (
-#         row['first_name'],
-#         row['last_name'],
-#         row['gender_identity'],
-#         row['insurance'],
-#         row['hourly_rate'],
-#         row['session_options'],
-#         row['specialized_support'],
-#         row['services_offered'],
-#         row['registration_number'],
-#         row['email'],
-#         row['city']
-#     ))
-
-
 print("✅ Data loaded from CSV into Snowflake!")
 
 cur.close()
